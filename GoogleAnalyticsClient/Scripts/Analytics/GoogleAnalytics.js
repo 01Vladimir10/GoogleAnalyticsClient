@@ -6,7 +6,9 @@
     ChartCanvas: "AnalyticsReportsChart",
     ReportTableContainer: "ReportTableContainer",
     ChartControls: "AnalyticsReportChartControls",
-    DateRange: "AnalyticsReportsDateRangePicker"
+    TableContainer: "AnalyticsReportTableContainer",
+    DateRange: "AnalyticsReportsDateRangePicker",
+    DowloadReportButton: "AnalyticsReportDownload",
 }
 const CssClasses = {
     ChartControlItem : "chart-control-item",
@@ -16,8 +18,6 @@ const Query = {
     startDate: new Date(),
     endDate: new Date(),
 }
-let startDate = new Date();
-let endDate = new Date();
 let DataChart;
 let DataSetLabels = [];
 
@@ -38,9 +38,14 @@ async function fetchReport() {
             startDate: Query.startDate.toISOString(),
             endDate: Query.endDate.toISOString(),
         };
-
     let data = await getReport(request);
-    return buildReportModel(data);
+    fillTable(data['htmlTable']);
+    return buildReportModel(data.data);
+}
+// Update the table
+function fillTable(htmlTable) {
+    document.getElementById(ControlIds.TableContainer)
+        .innerHTML = htmlTable;
 }
 
 async function getReport(params) {
@@ -87,6 +92,7 @@ function setUpChart() {
     DataChart = new Chart(document.getElementById(ControlIds.ChartCanvas), {
         type: 'line',
         options: {
+            snapGaps: true,
             legend: {
                 display: false
             },
@@ -203,6 +209,14 @@ function updateChart(data) {
     setSelectedChartControl('NewUsers');
 }
 
+function setUpDownloadButton() {
+    document.getElementById(ControlIds.DowloadReportButton)
+        .addEventListener('click', async () => {
+            let name = `Analytics_Report_${Query.startDate.toISOString()}-${Query.endDate.toISOString()}`;
+            await exportTableToExcel(ControlIds.TableContainer, name);
+        });
+    
+}
 
 async function onStart() {
     setDefaultValues();
@@ -210,6 +224,7 @@ async function onStart() {
     setUpChart();
     updateChart(data);
     setUpDateRange();
+    setUpDownloadButton();
 }
 
 
@@ -225,4 +240,31 @@ Number.prototype.toFixedDown = function(digits) {
         m = this.toString().match(re);
     return m ? parseFloat(m[1]) : this.valueOf();
 };
+
+function exportTableToExcel(tableID, filename = ''){
+    let downloadLink = document.createElement("a");
+    let dataType = 'application/vnd.ms-excel';
+    let tableSelect = document.getElementById(tableID);
+    let tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+    // Specify file name
+    filename = filename?filename+'.xls':'excel_data.xls';
+
+    // Create download link element
+    document.body.appendChild(downloadLink);
+
+    if(navigator.msSaveOrOpenBlob){
+        let blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    }else{
+        // Create a link to the file
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+        // Setting the file name
+        downloadLink.download = filename;
+        //triggering the function
+        downloadLink.click();
+    }
+}
 //#endregion

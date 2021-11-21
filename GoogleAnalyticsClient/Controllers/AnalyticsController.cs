@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Web;
 using System.Web.Mvc;
+using System.Web.UI;
 using GoogleAnalyticsClient.Mode;
 
 namespace GoogleAnalyticsClient.Controllers
@@ -18,7 +23,11 @@ namespace GoogleAnalyticsClient.Controllers
         public ActionResult GenerateAnalyticsReport(DateTime startDate = default, DateTime endDate = default)
         {
             var data = CreateMockData(startDate, endDate);
-            return Json(data, JsonRequestBehavior.AllowGet);
+            var htmlTable = PartialView("_AnalyticsReportsTable", data).RenderToString();
+            return Json(new
+            {
+                data, htmlTable
+            }, JsonRequestBehavior.AllowGet);
         }
         
 
@@ -68,5 +77,39 @@ namespace GoogleAnalyticsClient.Controllers
             };
         }
     }
+    
+    public static class ViewExtensions
+    {
+        public static string RenderToString(this PartialViewResult partialView)
+        {
+            var httpContext = HttpContext.Current;
+
+            if (httpContext == null)
+            {
+                throw new NotSupportedException("An HTTP context is required to render the partial view to a string");
+            }
+
+            var controllerName = httpContext.Request.RequestContext.RouteData.Values["controller"].ToString();
+
+            var controller = (ControllerBase)ControllerBuilder.Current.GetControllerFactory().CreateController(httpContext.Request.RequestContext, controllerName);
+
+            var controllerContext = new ControllerContext(httpContext.Request.RequestContext, controller);
+
+            var view = ViewEngines.Engines.FindPartialView(controllerContext, partialView.ViewName).View;
+
+            var sb = new StringBuilder();
+
+            using (var sw = new StringWriter(sb))
+            {
+                using (var tw = new HtmlTextWriter(sw))
+                {
+                    view.Render(new ViewContext(controllerContext, view, partialView.ViewData, partialView.TempData, tw), tw);
+                }
+            }
+            return sb.ToString();
+        }
+    }
+
+    
     
 }

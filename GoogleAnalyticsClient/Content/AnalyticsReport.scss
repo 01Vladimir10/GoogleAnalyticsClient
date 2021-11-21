@@ -21,6 +21,7 @@
 
 .analytics-reports-table {
   position: relative;
+  width: 100%;
 
   th {
     padding: .5em;
@@ -107,4 +108,22 @@
   .analytics-report__date-controls {
     margin-left: auto;
   }
+}
+#AnalyticsReportDownload {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  &:hover {
+    color: #1a73e8;
+  }
+}
+
+.d-flex {
+  display: flex;
+}
+.align-items-center {
+  align-items: center;
+}
+.ml-auto {
+  margin-left: auto;
 }
