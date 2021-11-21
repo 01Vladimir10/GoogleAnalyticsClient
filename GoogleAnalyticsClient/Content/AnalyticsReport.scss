@@ -1,0 +1,110 @@
+﻿:root {
+  font-size: 16px;
+}
+.analytics-reports-table__container {
+  overflow: auto;
+  width: 100%;
+
+  &:after {
+    display: block;
+    content: " ";
+    top: 0;
+    bottom: 50px;
+    left: 90%;
+    right: 0;
+    position: absolute;
+    background: linear-gradient(90deg, hsla(0, 100%, 100%, 5%), hsla(0, 100%, 100%, 85%));
+    height: 100%;
+    z-index: 100;
+  }
+}
+
+.analytics-reports-table {
+  position: relative;
+
+  th {
+    padding: .5em;
+    background-color: dodgerblue;
+    color: white;
+  }
+  td {
+    padding: .5em;
+  }
+  tr {
+    color: #333;
+    &:hover {
+      box-shadow: 1px 1px 4px #ddd;
+      background-color: hsla(0, 100%, 100%, 1);
+    }
+  }
+
+}
+
+.analytics-title {
+  margin-top: 2em;
+}
+
+.report-chart-controls {
+  display: flex;
+  list-style: none;
+  overflow-x: auto;
+}
+.report-chart-control {
+  $selectedColor: #1a73e8;
+  $selectedBackgroundColor: hsla(214, 82%, 51%, .1);
+  padding: 1em;
+  min-width: 20ch;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  transition: all linear 200ms;
+  position: relative;
+  
+  .report-chart-control__bar {
+    position: absolute;
+    display: block;
+    height: .25em;
+    border-radius: 5em;
+    width: 100%;
+    margin-bottom: .5em;
+    top: 0;
+    left: 0;
+    transition: all 400ms ease-in;
+    transform: translateY(-100%);
+  }
+  
+  &.selected {
+    color: $selectedColor;
+    background-color: $selectedBackgroundColor;
+    
+    .report-chart-control__bar {
+      background-color: $selectedColor;
+      transform: translateY(0);
+    }
+  }
+  
+  .report-chart-control__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    display: block;
+    color: inherit;
+    margin-top: .5em;
+  }
+  .report-chart-control__summary {
+    font-size: 2.25rem;
+    font-weight: 600;
+    display: block;
+    margin-top: auto;
+  }
+  &:hover {
+    filter: brightness(1.1);
+  }
+}
+.analytics-report__controls-row {
+  display: flex;
+  align-items: center;
+  
+  .analytics-report__date-controls {
+    margin-left: auto;
+  }
+}

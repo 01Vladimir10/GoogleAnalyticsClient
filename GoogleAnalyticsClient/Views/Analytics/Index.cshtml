@@ -1,0 +1,34 @@
+﻿@model GoogleAnalyticsClient.Mode.AnalyticsReportModel
+
+@section styles {
+    <link rel="stylesheet" href="/Content/AnalyticsReport.css">
+    <link rel="stylesheet" href="/Content/DateRangePicker.css">
+}
+<div class="container">
+    <div class="row">
+        <div class="analytics-report__controls-row">
+            <h3>Estadisticas Generales</h3>
+            <div class="date-range-picker" id="AnalyticsReportsDateRangePicker">
+                <div class="date-range-picker__content">
+                    Ultimos 30 dias
+                </div>
+                <div class="date-range-picker__panel">
+                    <label>Desde</label>
+                    <input type="date" name="startDate">
+                    <label>Hasta</label>
+                    <input type="date" name="endDate">
+                    <button>Aplicar</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            @Html.Partial("_AnalyticsReportsChart");
+        </div>
+        <h3>Vista detallada</h3>
+        <div class="col-xs-12">
+            @Html.Partial("_AnalyticsReportsTable", Model);
+        </div>
+    </div>
+</div>
+
+<script src="/Scripts/Analytics/Plugins/dateRangePicker.js"></script>

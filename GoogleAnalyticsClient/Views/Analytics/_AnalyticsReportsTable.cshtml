@@ -1,0 +1,42 @@
+﻿@model GoogleAnalyticsClient.Mode.AnalyticsReportModel
+
+
+@{
+    if (Model == null)
+    {
+        <h3>Nothing to show here</h3>
+        return;
+    }
+    var report = Model;
+}
+
+<div class="analytics-reports-table__container">
+    <table class="analytics-reports-table">
+        <thead>
+        <tr>
+            @foreach (var header in report.ColumnHeaders)
+            {
+                <th>@header.DisplayName</th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+        @for (var rowIndex = 0; rowIndex < report.Data.Values.First().Count; rowIndex ++)
+        {
+            <tr>
+                @foreach (var value in report.ColumnHeaders.Select(column => report.Data[column.Name][rowIndex]))
+                {
+                    if (value is DateTime time)
+                    {
+                        <td>@(time.ToString("MMM dd, yyyy"))</td>
+                    }
+                    else
+                    {
+                        <td>@value</td>
+                    }
+                }
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
